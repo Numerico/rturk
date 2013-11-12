@@ -10,7 +10,7 @@ module RTurk
   #
   #     RTurk.setup(YourAWSAccessKeyId, YourAWSAccessKey, :sandbox => true)
   #     hit = RTurk::Hit.create(:title => "Add some tags to a photo") do |hit|
-  #       hit.assignments = 2
+  #       hit.max_assignments = 2
   #       hit.question("http://myapp.com/turkers/add_tags")
   #       hit.reward = 0.05
   #       hit.qualifications.approval_rate, {:gt => 80}
@@ -40,14 +40,18 @@ module RTurk
       end
 
       def all_reviewable
-        RTurk.GetReviewableHITs.hit_ids.inject([]) do |arr, hit_id|
-          arr << new(hit_id); arr
+        [].tap do |hits|
+          RTurk.GetReviewableHITs.hit_ids.each do |hit_id|
+            hits << new(hit_id)
+          end
         end
       end
 
       def all
-        RTurk.SearchHITs.hits.inject([]) do |arr, hit|
-          arr << new(hit.id, hit); arr;
+        [].tap do |hits|
+          RTurk.SearchHITs.hits.each do |hit|
+            hits << new(hit.id, hit)
+          end
         end
       end
 
@@ -61,11 +65,16 @@ module RTurk
     end
 
     # memoing
-    def assignments
-      @assignments ||=
-        RTurk::GetAssignmentsForHIT(:hit_id => self.id).assignments.inject([]) do |arr, assignment|
+    def assignments(options={})
+      @assignments ||= {}
+
+      @assignments[options] ||= begin
+        assignments_options = options.update(:hit_id => self.id)
+        
+        RTurk::GetAssignmentsForHIT(assignments_options).assignments.inject([]) do |arr, assignment|
           arr << RTurk::Assignment.new(assignment.assignment_id, assignment)
         end
+      end
     end
 
     def details
@@ -114,6 +123,8 @@ module RTurk
         @source.send(method, *args)
       elsif self.details.respond_to?(method)
         self.details.send(method)
+      else
+        super
       end
     end
   end

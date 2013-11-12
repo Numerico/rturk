@@ -21,7 +21,7 @@ module RTurk
         base_params = {
           'Service'=>'AWSMechanicalTurkRequester',
           'AWSAccessKeyId' => credentials.access_key,
-          'Timestamp' => Time.now.iso8601,
+          'Timestamp' => Time.now.utc.iso8601,
           'Version' => RTurk::API_VERSION
         }
 
@@ -66,7 +66,7 @@ module RTurk
           end
         end
 
-        def sign(secret_key, service,method,time)
+        def sign(secret_key, service, method, time)
           msg = "#{service}#{method}#{time}"
           return hmac_sha1(secret_key, msg )
         end
