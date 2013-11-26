@@ -38,6 +38,8 @@ module RTurk
     ### Instance Methods ###
     ########################
 
+    attr_accessor :aws_id, :aws_key
+
     def initialize(opts = {})
       opts.each_pair do |k,v|
         if self.respond_to?("#{k.to_sym}=")
@@ -64,7 +66,8 @@ module RTurk
     end
 
     def to_params
-      {}# Override to include extra params
+      # this condition is never met, probably because we're never instancing
+      aws_id.nil? || aws_key.nil? ? {} : {'AWSId' => aws_id, 'AWSKey' => aws_key}
     end
 
     def request

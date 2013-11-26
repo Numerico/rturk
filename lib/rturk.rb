@@ -37,3 +37,4 @@ Dir.glob(File.join(File.dirname(__FILE__), 'rturk', 'parsers', '*.rb')).each {|f
 Dir.glob(File.join(File.dirname(__FILE__), 'rturk', 'parsers', 'responses', '*.rb')).each {|f| require f }
 
 require 'rturk/errors'
+require 'rturk/rturk_instance'

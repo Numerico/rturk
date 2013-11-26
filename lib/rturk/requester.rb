@@ -18,6 +18,7 @@ module RTurk
       def request(params = {})
         params.delete_if {|k,v| v.nil? }
         params = stringify_keys(params)
+        params = separate_keys(params)
         base_params = {
           'Service'=>'AWSMechanicalTurkRequester',
           'AWSAccessKeyId' => credentials.access_key,
@@ -56,7 +57,7 @@ module RTurk
       private
 
         def credentials
-          RTurk
+          @rturk_instance.nil? ? RTurk : @rturk_instance
         end
 
         def stubbed_response
@@ -88,6 +89,16 @@ module RTurk
 
           return Base64::encode64(Digest::SHA1.digest(outer)).chomp
         end
+
+        def separate_keys(params)
+          if params['AWSId'] && params['AWSKey']
+            aws_id = params.delete 'AWSId'
+            aws_key = params.delete 'AWSKey'
+            @rturk_instance = RTurkInstance.new aws_id, aws_key
+          end
+          params
+        end
+
     end
   end
 
