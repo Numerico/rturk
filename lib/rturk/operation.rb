@@ -57,7 +57,7 @@ module RTurk
     end
 
     def default_params
-      self.class.default_params
+      !(self.aws_id.nil? || self.aws_key.nil?) ? {'AWSId' =>  @aws_id, 'AWSKey' => @aws_key} : self.class.default_params
     end
 
     def parse(xml)
@@ -66,8 +66,7 @@ module RTurk
     end
 
     def to_params
-      # this condition is never met, probably because we're never instancing
-      aws_id.nil? || aws_key.nil? ? {} : {'AWSId' => aws_id, 'AWSKey' => aws_key}
+      {}
     end
 
     def request
