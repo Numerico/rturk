@@ -57,7 +57,7 @@ module RTurk
     end
 
     def default_params
-      !(self.aws_id.nil? || self.aws_key.nil?) ? {'AWSId' =>  @aws_id, 'AWSKey' => @aws_key} : self.class.default_params
+      self.class.default_params
     end
 
     def parse(xml)
@@ -66,7 +66,7 @@ module RTurk
     end
 
     def to_params
-      {}
+      {}# Override to include extra params
     end
 
     def request
@@ -77,7 +77,7 @@ module RTurk
       params = {'Operation' => self.class.to_s.gsub(/^\w+::/,'')}
       params = params.merge(self.default_params)
       params = to_params.merge(params)
-      response = RTurk.Request(params)
+      response = RTurk.Request(aws_id, aws_key, params)
       parse(response)
     end
 
