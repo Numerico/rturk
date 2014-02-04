@@ -5,7 +5,6 @@ class RTurkInstance
     @secret_key=secret_key
   end
   def host
-    #RTurk.host
-    'https://mechanicalturk.sandbox.amazonaws.com/'
+    RTurk.host
   end
 end
